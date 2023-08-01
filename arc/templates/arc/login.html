@@ -1,0 +1,31 @@
+{% extends "arc/layout.html" %}
+{% block title %}
+
+    login
+
+{% endblock %}
+{% block main %}
+
+    <h1 class="text-center">Login</h1>
+    <div class="form">
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <div class="input-line">
+                <label class="input-left">
+                    Username
+                </label>
+                <input class="input-box" name="username" type="text" autocomplete="off" autofocus>
+            </div>
+            <div class="input-line">
+                <label class="input-left">
+                    Password
+                </label>
+                <input class="input-box" name="password" type="password" autocomplete="off">
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary" id="login-btn">Login</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

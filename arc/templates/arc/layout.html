@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+        
+        <!-- Get bootstrap online -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+
+        <!-- Get boostrap offline -->
+        <link rel="stylesheet" href="{% static 'arc/bootstrap.css' %}">
+        <script src="{% static 'arc/bootstrap.js' %}"></script>
+
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'arc/styles.css' %}">
+        {% block script %}{% endblock %}
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-custom border">
+            <a class="navbar-brand" href="{% url 'index' %}"><span><h1>Arcnet</h1></span></a>
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="navbar-nav me-auto mt-2">
+                    <li class="nav-item">
+                        <a href="{% url 'index' %}" class="nav-link active">All posts</a>
+                    </li>
+                    {% if user.is_authenticated %}
+
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Following</a>
+                        </li>
+
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav ms-auto mt-2">
+                    {% if user.is_authenticated %}
+
+                        <li class="nav-item">
+                            <a class="nav-link"><strong>{{ request.user.username }}</strong></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Log out</a>
+                        </li>
+
+                    {% else %}
+
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'login' %}">Log in</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'register' %}">Register</a>
+                        </li>
+
+                    {% endif %}
+
+                </ul>
+            </div>
+        </nav>
+        <header>
+            {% if yay_message %}
+
+                <div class="alert alert-success text-center" role="alert">
+                    {{ yay_message }}
+                </div>
+
+            {% endif %}
+            {% if nay_message %}
+
+                <div class="alert alert-danger text-center" role="alert">
+                    {{ nay_message }}
+                </div>
+
+            {% endif %}
+        </header>
+        <main>{% block main %}{% endblock %}</main>
+        <footer class="text-center">
+            &#169; Nguyen Dinh Thi Van
+        </footer>
+    </body>
+</html>

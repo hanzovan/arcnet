@@ -1,0 +1,55 @@
+{% extends "arc/layout.html" %}
+{% block title %}
+
+    register
+
+{% endblock %}
+{% block main %}
+
+    <h1 class="text-center">Register</h1>
+    <div class="form">
+        <form action="{% url 'register' %}" method="post">
+            {% csrf_token %}
+            <div class="input-line">
+                <label class="input-left">
+                    Username
+                </label>
+                <input class="input-box" name="username" type="text" autocomplete="off" autofocus>
+                <div class="input-right">
+                    <p>Need to be unique and short</p>
+                </div>
+            </div>
+            <div class="input-line">
+                <label class="input-left">
+                    Email
+                </label>
+                <input class="input-box" name="email" type="email" autocomplete="off">
+                <div class="input-right">
+                    <p>Your valid email for us to send notification and news</p>
+                </div>
+            </div>
+            <div class="input-line">
+                <label class="input-left">
+                    Password
+                </label>
+                <input class="input-box" name="password" type="password" autocomplete="off">
+                <div class="input-right">
+                    <p>Your password has to be at least 6 characters, including alphabet, number, and special characters</p>
+                </div>
+            </div>
+            <div class="input-line">
+                <label class="input-left">
+                    Confirm password
+                </label>
+                <input class="input-box" name="confirmation" type="password" autocomplete="off">
+                <div class="input-right">
+                    <p>Confirm your password again</p>
+                </div>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary text-center" id="register-btn">Submit</button>
+            </div>            
+        </form>
+    </div>
+
+{% endblock %}
