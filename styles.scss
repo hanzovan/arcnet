@@ -59,6 +59,14 @@ main {
     min-height: 600px;
 }
 
+textarea {
+    display: block;
+    width: 700px;
+    padding: 10px;
+    margin: 30px 0;
+    
+}
+
 .navbar-custom {    
     padding-left: 30px;
     padding-right: 30px;
@@ -86,4 +94,62 @@ main {
 #login-btn {
     margin-top: 50px;
     margin-bottom: 50px;
+}
+
+.alert-success, .alert-danger {
+    animation-name: hide;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+@keyframes hide {
+    0% {
+        opacity: 1;
+        line-height: 1;
+        height: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+    }
+    75% {
+        opacity: 0;
+        line-height: 1;
+        height: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+    }
+    100% {
+        opacity: 0;
+        line-height: 0;
+        height: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}
+
+// Post setting
+.post {
+    margin: 80px 0 80px 100px;
+}
+.author {
+    font-size: 26px;
+    text-decoration: none;
+    margin-right: 10px;
+}
+.post-timestamp {
+    font-size: 13px;
+    font-style: italic;
+    color: grey;
+}
+.post-content {
+    margin: 30px 0 10px 60px;
+    font-style: normal;
+    font-size: 20px;
+    color: black;
+    font-weight: 500;
+}
+.like-count {
+    color: black;
+}
+.like-btn {
+    text-decoration: none;
 }

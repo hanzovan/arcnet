@@ -20,5 +20,5 @@ class Post(models.Model):
             'author': self.author.username,
             'author_id': self.author.id,
             'content': self.content,
-            'created': self.created
+            'created': self.created.strftime("%b %d %Y, %I:%M %p")
         }

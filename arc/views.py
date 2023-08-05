@@ -1,12 +1,16 @@
+import json
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db import IntegrityError
+from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 
 from .helpers import strong_password
-from .models import User
+from .models import User, Post
+
 
 # Create your views here.
 def index(request):
@@ -18,11 +22,28 @@ def index(request):
     request.session['yay_message'] = ''
     request.session['nay_message'] = ''
 
+    # Get posts
+    posts = Post.objects.all().order_by("-created")
+
     return render(request, "arc/index.html", {
         "yay_message": yay_message,
-        "nay_message": nay_message
+        "nay_message": nay_message,
+        "posts": posts
     })
 
+
+# Get posts from a specific page
+def get_posts(request, page_number):
+    # Get all posts and turn them into pages
+    posts = Post.objects.all().order_by("-created")
+    paging = Paginator(posts, 10)
+
+    # Get the current page which user choses
+    page_obj = paging.get_page(page_number)
+
+    return JsonResponse({
+        'posts': [post.serialize() for post in page_obj]
+    })
 
 # Allow user to create their own account
 def register(request):
@@ -80,12 +101,12 @@ def login_view(request):
     if request.method == 'POST':
         # Define variables
         username = request.POST['username']
-        password = request.POST['password']
+        password = request.POST.get('password', '')
 
         # Check requirement
-        if not username or not password:
+        if not username:
             return render(request, "arc/login.html", {
-                "nay_message": "Missing credentials"
+                "nay_message": "Missing username"
             })
 
         # Try to log in
@@ -111,3 +132,23 @@ def logout_view(request):
     logout(request)
     request.session['yay_message'] = 'Logged out successfully'
     return HttpResponseRedirect(reverse('index'))
+
+
+# Allow user to create new post
+@csrf_exempt
+@login_required
+def compose_post(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'}, status=400)
+    
+    data = json.loads(request.body)
+
+    if data.get('content') is not None:
+        new_post = Post(
+            author = request.user,
+            content = data['content']
+        )
+        new_post.save()
+
+    return JsonResponse({'message': 'Post saved'})
+

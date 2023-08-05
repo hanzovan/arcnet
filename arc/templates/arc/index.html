@@ -1,19 +1,31 @@
 {% extends "arc/layout.html" %}
+{% load static %}
 {% block title %}
 
     index
 
 {% endblock %}
 {% block main %}
+    <div id="all-posts-view"></div>
 
-    <h1 class="text-center">
-        Index
-    </h1>
     <div id="new-post-view">
-        <form id="new-post">
-            <textarea id="new-content"></textarea>
-            <button>Save</button>
-        </form>
+        <h1 class="text-center">
+            New Post
+        </h1>
+        <div class="text-center" style="display: flex; justify-content: center;">
+            <form id="new-post-form">
+                <textarea id="new-content"></textarea>
+                <button class="btn btn-primary" id="new-post-btn">Save</button>
+            </form>
+        </div>
     </div>
+    
+
+{% endblock %}
+{% block script %}
+    <script>
+        var indexPage = true;
+    </script>
+    <script src="{% static 'arc/index.js' %}"></script>
 
 {% endblock %}
