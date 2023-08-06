@@ -121,4 +121,15 @@ textarea {
 .like-btn {
   text-decoration: none; }
 
+.paging-link {
+  cursor: pointer;
+  text-decoration: none;
+  margin-right: 10px; }
+
+.pagination {
+  margin-left: 30px; }
+
+.current-page {
+  margin-right: 10px; }
+
 /*# sourceMappingURL=styles.css.map */

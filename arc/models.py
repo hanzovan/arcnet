@@ -22,3 +22,11 @@ class Post(models.Model):
             'content': self.content,
             'created': self.created.strftime("%b %d %Y, %I:%M %p")
         }
+
+
+class Like(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
+    reader = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.reader} like {self.post}"

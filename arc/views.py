@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 
 from .helpers import strong_password
-from .models import User, Post
+from .models import User, Post, Like
 
 
 # Create your views here.
@@ -33,6 +33,7 @@ def index(request):
 
 
 # Get posts from a specific page
+@csrf_exempt
 def get_posts(request, page_number):
     # Get all posts and turn them into pages
     posts = Post.objects.all().order_by("-created")
@@ -41,8 +42,27 @@ def get_posts(request, page_number):
     # Get the current page which user choses
     page_obj = paging.get_page(page_number)
 
+    # Confirm whether current page has next or last page
+    has_next_page = page_obj.has_next()
+    if has_next_page:
+        next_page = page_obj.next_page_number()
+    else:
+        next_page = 'none'
+
+    has_previous_page = page_obj.has_previous()
+    if has_previous_page:
+        previous_page = page_obj.previous_page_number()
+    else:
+        previous_page = 'none'
+
     return JsonResponse({
-        'posts': [post.serialize() for post in page_obj]
+        'posts': [post.serialize() for post in page_obj],
+        'has_next_page': has_next_page,
+        'has_previous_page': has_previous_page,
+        'next_page': next_page,
+        'previous_page': previous_page,
+        'last_page': page_obj.paginator.num_pages,
+        'current_page': page_obj.number
     })
 
 # Allow user to create their own account
@@ -152,3 +172,56 @@ def compose_post(request):
 
     return JsonResponse({'message': 'Post saved'})
 
+
+# Allow user to like post, user has to login first
+@login_required
+@csrf_exempt
+def like_post(request):
+    # method has to be POST
+    if request.method != 'POST':
+        return JsonResponse({'error':"POST method required"}, status=400)
+    
+    # get the data from browser
+    data = json.loads(request.body)
+
+    if data.get('post_id') is not None:
+        post_id = data['post_id']
+
+        # then get the post id and current user id
+        reader= request.user
+
+        # If this like already exist, delete it, else create it
+        try:
+            old_like = Like.objects.get(post=Post.objects.get(pk=post_id), reader=reader)
+            old_like.delete()
+        except Like.DoesNotExist:
+            # Create a like object
+            like = Like(post = Post.objects.get(pk=post_id), reader = reader)
+            like.save()           
+
+    return JsonResponse({'message': 'Liked post'}, safe=False)
+    
+
+# Update like for each post
+@csrf_exempt
+def update_like(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST request required'}, status=400)
+    
+    data = json.loads(request.body)
+    if data.get('post_id') is not None:
+        post = Post.objects.get(pk=data['post_id'])
+        like_count = Like.objects.filter(post=post).count()
+
+    return JsonResponse({'like_count': like_count}, safe=False)
+
+
+# Allow user to see the author's profile
+@csrf_exempt
+def profile(request, author_id):
+    author = User.objects.get(pk=author_id)
+    posts = Post.objects.filter(author=author)
+
+    return render(request, "arc/profile.html", {
+        "posts": posts
+    })

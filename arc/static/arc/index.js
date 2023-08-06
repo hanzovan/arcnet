@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function compose() {
         // Show the compose view, clear the input
         newPostView.style.display = 'block';
+        allPostsView.style.display = 'none';
 
         const inputArea = newPostView.querySelector('#new-content');
         inputArea.value = '';
@@ -59,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // After saved the post, hide the compose view
                 newPostView.value = '';
                 newPostView.style.display = 'none';
+                load_posts(1);
             })            
             return false;
         }
@@ -67,27 +69,38 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide compose view, show the the posts view
         newPostView.style.display = 'none';
         allPostsView.style.display = 'block';
+
+        // Clean the view
+        allPostsView.innerHTML = '';
         
         // Create a post container
-        let postsContainer = document.createElement('div');
+        const postsContainer = document.createElement('div');
         postsContainer.className = 'container';
         postsContainer.id = 'posts-container';
         allPostsView.appendChild(postsContainer);
 
-        // Get the posts from server
+        // Get the posts from server via fetching get_posts in view
         fetch(`/get_posts/${page_num}`)
         .then(response => response.json())
         .then(data => {
             const posts = data.posts;
+            const has_next_page = data.has_next_page;
+            const has_previous_page = data.has_previous_page;            
+
+            // set up content and style for every post
             posts.forEach(post => {
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post';
                 postDiv.id = `post-${post.id}`;
 
-                const auThor = document.createElement('a');
-                auThor.className = 'author';
-                auThor.innerHTML = `<strong>${post.author}</strong>`;
-                auThor.style.cursor = 'pointer';
+                const author = document.createElement('a');
+                author.className = 'author';
+                author.innerHTML = `<strong>${post.author}</strong>`;
+                author.style.cursor = 'pointer';
+                author.onclick = function() {
+                    window.location.href = `/profile/${post.author_id}`;
+                }
+                
 
                 const timeStamp = document.createElement('span');
                 timeStamp.className = 'post-timestamp';
@@ -101,17 +114,94 @@ document.addEventListener('DOMContentLoaded', function() {
                 likeBtn.className = 'btn btn-sm btn-link like-btn';
                 likeBtn.innerHTML = '&#128077;&#127999;';
 
+                // If user logged in, give the like button a function
+                if (isAuthenticated) {
+                    likeBtn.onclick = function() {
+                        fetch('like_post', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                'post_id': post.id
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(() => {
+                            updateLikes(posts);
+                        })
+                    }
+                }                
+
                 const likeCount = document.createElement('span');
                 likeCount.className = 'like-count';
                 likeCount.innerHTML = '0';
 
-                postDiv.appendChild(auThor);
+                postDiv.appendChild(author);
                 postDiv.appendChild(timeStamp);
                 postDiv.appendChild(conTent);
                 postDiv.appendChild(likeBtn);
                 postDiv.appendChild(likeCount);
                 postsContainer.appendChild(postDiv);
             })
+
+            function updateLikes(posts) {
+                posts.forEach(post => {
+                    fetch('update_like', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            'post_id': post.id
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const likeCount = data.like_count;
+                        
+                        let currentPost = document.querySelector(`#post-${post.id}`);
+
+                        currentPost.querySelector('.like-count').innerHTML = `${likeCount}`;
+                    })
+                })                
+            }
+
+            updateLikes(posts);
+
+            // Show the pagin link
+            const pagingDiv = document.createElement('div');
+            pagingDiv.className = 'pagination';
+
+            if (has_previous_page) {
+                const firstPage = document.createElement('a');
+                firstPage.className = 'paging-link';
+                firstPage.innerHTML = '&laquo; First';
+                firstPage.onclick = () => load_posts(1);
+                pagingDiv.append(firstPage);
+
+                const previousPage = document.createElement('a');
+                previousPage.className = 'paging-link';
+                previousPage.innerHTML = 'Previous';                
+                previousPage.onclick = () => load_posts(data.previous_page);
+                pagingDiv.append(previousPage);                
+            }
+
+            const currentPage = document.createElement('span');
+            currentPage.className = 'current-page';
+            
+            currentPage.innerHTML = `Page ${data.current_page} of ${data.last_page}`;
+            pagingDiv.append(currentPage);
+
+            if (has_next_page) {
+                const nextPage = document.createElement('a');
+                nextPage.className = 'paging-link';
+                nextPage.innerHTML = 'Next';                
+                nextPage.onclick = () => load_posts(data.next_page);
+                pagingDiv.append(nextPage);
+
+                const lastPage = document.createElement('a');
+                lastPage.className = 'paging-link';
+                lastPage.innerHTML = 'Last &raquo;';
+                lastPage.onclick = () => load_posts(data.last_page);
+                pagingDiv.append(lastPage);
+            }
+            
+            allPostsView.appendChild(pagingDiv);
         })
         .catch(error => {
             console.log(error);

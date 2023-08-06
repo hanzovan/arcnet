@@ -1,0 +1,21 @@
+{% extends "arc/layout.html" %}
+{% load static %}
+{% block title %}
+
+    profile
+
+{% endblock %}
+{% block main %}
+
+    <h1>Profile</h1>
+    <hr>
+    {% for post in posts %}
+
+        <p>{{ post.content }}</p>
+
+    {% endfor %}
+
+{% endblock %}
+{% block script %}
+
+{% endblock %}
