@@ -220,8 +220,15 @@ def update_like(request):
 @csrf_exempt
 def profile(request, author_id):
     author = User.objects.get(pk=author_id)
-    posts = Post.objects.filter(author=author)
+    posts = Post.objects.filter(author=author).order_by("-created")
+
+    # Set up paging
+    paging = Paginator(posts, 10)
+    page_number = request.GET.get('page')
+    page_obj = paging.get_page(page_number)
 
     return render(request, "arc/profile.html", {
-        "posts": posts
+        "posts": posts,
+        "author": author,
+        "page_obj": page_obj
     })

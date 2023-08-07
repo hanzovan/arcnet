@@ -153,7 +153,7 @@ textarea {
     .like-btn {
         text-decoration: none;
     }
-    .paging-link {
+    .paging-link, #follow-btn {
         cursor: pointer;
         text-decoration: none;
         margin-right: 10px;
@@ -163,4 +163,12 @@ textarea {
     }
     .current-page {
         margin-right: 10px;
+    }
+
+// profile.html
+    #follow {
+        li {
+            font-size: 13px;
+            color: grey;
+        }
     }

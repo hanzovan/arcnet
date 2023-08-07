@@ -121,7 +121,7 @@ textarea {
 .like-btn {
   text-decoration: none; }
 
-.paging-link {
+.paging-link, .step-links, #follow-btn {
   cursor: pointer;
   text-decoration: none;
   margin-right: 10px; }
@@ -131,5 +131,9 @@ textarea {
 
 .current-page {
   margin-right: 10px; }
+
+#follow li {
+  font-size: 13px;
+  color: grey; }
 
 /*# sourceMappingURL=styles.css.map */
