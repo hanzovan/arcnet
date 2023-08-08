@@ -1,0 +1,50 @@
+{% extends "arc/layout.html" %}
+{% load static %}
+{% block title %}
+
+    following
+
+{% endblock %}
+{% block main %}
+
+    <div class="container" id="posts-container">
+        {% for post in page_obj %}
+
+            <div class="post" id="post-{{ post.id }}">
+                <a class="author">
+                    <strong>{{ post.author }}</strong>
+                </a>
+                <span class="post-timestamp">{{ post.created }}</span>
+                <p class="post-content">{{ post.content }}</p>
+                <button class="btn btn-sm btn-link like-btn">&#128077;&#127999;</button>
+                <span class="like-count">0</span>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+
+            <a class="paging-link" href="?page=1">&laquo; First</a>
+            <a class="paging-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+
+            <a class="paging-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a class="paging-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+{% block script %}
+
+    <script src="{% static 'arc/following_page.js' %}"></script>
+
+{% endblock %}

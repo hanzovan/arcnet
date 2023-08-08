@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -220,15 +220,80 @@ def update_like(request):
 @csrf_exempt
 def profile(request, author_id):
     author = User.objects.get(pk=author_id)
-    posts = Post.objects.filter(author=author).order_by("-created")
+    posts = Post.objects.filter(author=author).order_by("-created")    
+
+    # Calculate the number of following and follower of this author    
+    following_users = author.following.all()
+    following_count = following_users.count()
+    
+    followers = User.objects.filter(following=author)
+    followers_count = followers.count()   
 
     # Set up paging
     paging = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paging.get_page(page_number)
 
-    return render(request, "arc/profile.html", {
-        "posts": posts,
-        "author": author,
+    # If user logged in, define if user is author or not
+    if request.user.is_authenticated:
+        # Define that user is author or not
+        user_is_author = request.user == author
+
+        # Confirm that current user is followers or not
+        followed = request.user in followers
+
+        return render(request, "arc/profile.html", {
+            "user_is_author": user_is_author,
+            "author": author,
+            "page_obj": page_obj,
+            "followed": followed,
+            "following": following_count,
+            "followers": followers_count
+        })
+
+    else:
+        return render(request, "arc/profile.html", {
+            "page_obj": page_obj,
+            "author": author,
+            "following": following_count,
+            "followers": followers_count
+        })
+
+
+# Allow user to follow an author
+@login_required
+def follow_user(request):
+    # the method have to be POST
+    if request.method == 'POST':
+        # Look for the author
+        author_id = request.POST['author_id']
+        author = User.objects.get(pk=author_id)
+
+        # If user already followed this author
+        if author in request.user.following.all():
+            request.user.following.remove(author)
+        else:
+            request.user.following.add(author)
+
+        return redirect('profile', author_id=author_id)
+
+
+# Allow user to access posts from his/her following authors
+@login_required
+def following_page(request):
+    # Get the user, then the authors that user following
+    user = request.user
+    authors = user.following.all()
+
+    # From the authors, get their posts
+    posts = Post.objects.filter(author__in=authors).order_by("-created")
+
+    paging = Paginator(posts, 10)
+
+    page_number = request.GET.get('page')
+
+    page_obj = paging.get_page(page_number)
+
+    return render(request, "arc/following_page.html", {
         "page_obj": page_obj
     })

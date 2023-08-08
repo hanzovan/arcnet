@@ -32,7 +32,7 @@
                     {% if user.is_authenticated %}
 
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">Following</a>
+                            <a class="nav-link active" href="{% url 'following_page' %}">Following</a>
                         </li>
                         <li class="nav-item" id="new-post"></li>
 
@@ -42,7 +42,7 @@
                     {% if user.is_authenticated %}
 
                         <li class="nav-item">
-                            <a class="nav-link"><strong>{{ request.user.username }}</strong></a>
+                            <a class="nav-link" href="{% url 'profile' author_id=request.user.id %}"><strong>{{ request.user.username }}</strong></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">Log out</a>

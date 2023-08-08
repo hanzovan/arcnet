@@ -11,14 +11,33 @@
             <h1 class="page-title">{{ author.username }}</h1>
             <div class="navbar-expand-lg">
                 <ul class="navbar-nav me-auto mt-2" id="follow">
-                    <li class="nav-item"><span>Following</span></li>
-                    <li class="nav-item" style="margin-left: 10px;"><span>Follower</span></li>
+                    <li class="nav-item"><span>{{ following }} Following</span></li>
+                    <li class="nav-item" style="margin-left: 10px;"><span>{{ followers }} Follower{% if followers > 1 %}s{% endif %}</span></li>
                 </ul>
             </div>            
         </div>
-        <div>
-            <button class="btn btn-lg btn-link follow-btn" id="follow-btn">Follow {{ author.username }}</button>
-        </div>        
+
+        {% if user.is_authenticated %}
+            {% if not user_is_author %}
+
+                <div class="form">
+                    <form action="{% url 'follow_user' %}" method="post">
+                        {% csrf_token %}
+                        <input name="author_id" type="hidden" value="{{ author.id }}">
+                        <button class="btn btn-lg btn-outline-primary follow-btn" id="follow-btn">
+                            {% if not followed %}
+                                Follow 
+                            {% else %}
+                                Unfollow
+                            {% endif %}
+                            {{ author.username }}
+                        </button>
+                    </form>                    
+                </div> 
+
+            {% endif %}            
+        {% endif %}
+               
     </div>
     
     <hr>
