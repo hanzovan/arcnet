@@ -297,3 +297,32 @@ def following_page(request):
     return render(request, "arc/following_page.html", {
         "page_obj": page_obj
     })
+
+
+# Allow user to edit their own post
+@login_required
+@csrf_exempt
+def edit_post(request):
+    # Require POST method
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'}, status=400)
+    # Get data from JavaScript
+    data = json.loads(request.body)
+    if data.get('post_id') is not None:
+        # Get the post
+        post_id = data['post_id']       
+        post = Post.objects.get(pk=post_id)
+
+        # Confirm that user is the author
+        if request.user != post.author:
+            return JsonResponse({'error': 'You are not author of this post'}, status=400)
+
+        if data['type'] == 'edit':
+            content = data.get('content', '')
+            post.content = content
+            post.save()
+
+        if data['type'] == 'delete':
+            post.delete()
+            
+    return JsonResponse({'message': 'Post edited'})

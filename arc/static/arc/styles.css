@@ -96,7 +96,13 @@ textarea {
     margin-top: 0;
     margin-bottom: 0; } }
 .post {
-  margin: 80px 0 80px 100px; }
+  background-color: #edcab5;
+  padding: 20px;
+  margin-bottom: 10px;
+  animation-name: hide;
+  animation-fill-mode: forwards;
+  animation-duration: 2s;
+  animation-play-state: paused; }
 
 .author {
   font-size: 26px;
@@ -118,10 +124,10 @@ textarea {
 .like-count {
   color: black; }
 
-.like-btn {
+.like-btn, .edit-view-btn, .save-btn, .delete-post-btn {
   text-decoration: none; }
 
-.paging-link, .step-links, #follow-btn {
+.paging-link, #follow-btn {
   cursor: pointer;
   text-decoration: none;
   margin-right: 10px; }
