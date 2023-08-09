@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const likeCount = document.createElement('span');
                 likeCount.className = 'like-count';
-                likeCount.innerHTML = '0';
+                likeCount.innerHTML = '0';                
 
                 postDiv.appendChild(author);
                 postDiv.appendChild(timeStamp);
@@ -140,6 +140,79 @@ document.addEventListener('DOMContentLoaded', function() {
                 postDiv.appendChild(likeBtn);
                 postDiv.appendChild(likeCount);
                 postsContainer.appendChild(postDiv);
+
+                // Add ability edit and remove post for only author of the post
+                if (isAuthenticated && (post.author_id === user_id)) {
+                    const editViewBtn = document.createElement('button');
+                    editViewBtn.className = 'btn btn-lg btn-link edit-view-btn';
+                    editViewBtn.innerHTML = `Edit`;
+                    editViewBtn.onclick = function() {
+                        // If user already click edit button and the form already shown, clear the form
+                        if (postDiv.querySelector('.edit-view')) {
+                            postDiv.querySelector('.edit-view').remove();
+                        } else {
+                            const formDiv = document.createElement('div');
+                            formDiv.className = 'text-center edit-view';
+                            formDiv.style = 'display: flex; justify-content: center;';
+                            const editForm = document.createElement('form');
+                            editForm.className = 'edit-form';
+                            const textArea = document.createElement('textarea');
+                            textArea.className = 'new-content';
+                            textArea.innerHTML = `${conTent.innerHTML}`;
+                            const saveBtn = document.createElement('button');
+                            saveBtn.className = 'btn btn-primary save-btn';
+                            saveBtn.innerHTML = 'Save';
+
+                            // Add a form to edit the post
+                            editForm.appendChild(textArea);
+                            editForm.appendChild(saveBtn);
+
+                            // Add eventlistener to edit form
+                            editForm.onsubmit = function() {
+                                fetch('edit_post', {
+                                    method: 'POST',
+                                    body: JSON.stringify({
+                                        'post_id': post.id,
+                                        'content': textArea.value,
+                                        'type': 'edit'
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(() => {
+                                    conTent.innerHTML = textArea.value;
+                                    formDiv.remove();
+                                })
+
+                                return false;
+                            }
+
+                            formDiv.appendChild(editForm);                        
+                            postDiv.appendChild(formDiv);
+                        }                        
+                    }
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn btn-lg btn-link delete-post-btn';
+                    deleteBtn.innerHTML = 'Delete';
+                    deleteBtn.onclick = function() {
+                        fetch('edit_post', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                'post_id': post.id,
+                                'type': 'delete'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(() => {
+                            postDiv.style.animationPlayState = 'running';
+                            postDiv.addEventListener('animationend', function() {
+                                postDiv.remove();
+                            })                            
+                        })
+                    }
+
+                    postDiv.appendChild(editViewBtn);
+                    postDiv.appendChild(deleteBtn)
+                }
             })
 
             function updateLikes(posts) {

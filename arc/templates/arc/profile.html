@@ -54,13 +54,13 @@
                 <span class="like-count">0</span>
                 {% if user_is_author %}
                     <button class="btn btn-lg btn-link edit-view-btn">Edit</button>
+                    <button class="btn btn-lg btn-link delete-post-btn">Delete</button>
                     <div class="text-center edit-view" style="display: none; justify-content: center;">
                         <form class="edit-form">
                             <textarea class="new-content"></textarea>
                             <button class="btn btn-primary save-btn">Save</button>
                         </form>
-                    </div>
-                    <button class="btn btn-lg btn-link delete-post-btn">Delete</button>
+                    </div>                    
                 {% endif %}
             </div>
         {% endfor %}
