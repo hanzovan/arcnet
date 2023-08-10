@@ -11,7 +11,7 @@
         {% for post in page_obj %}
 
             <div class="post" id="post-{{ post.id }}">
-                <a class="author">
+                <a class="author" href="{% url 'profile' author_id=post.author.id %}">
                     <strong>{{ post.author }}</strong>
                 </a>
                 <span class="post-timestamp">{{ post.created }}</span>
