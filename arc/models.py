@@ -30,3 +30,20 @@ class Like(models.Model):
 
     def __str__(self):
         return f"{self.reader} like {self.post}"
+
+
+class Reply(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='replies')
+    commentor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    comment = models.TextField()
+
+    def __str__(self):
+        return f"{self.commentor} replied to this post {self.post} as follow: {self.comment}"
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'author': self.post.author.username,
+            'commentor': self.commentor,
+            'comment': self.comment
+        }

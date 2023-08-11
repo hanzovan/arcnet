@@ -52,6 +52,18 @@
                 <p class="post-content">{{ post.content }}</p>
                 <button class="btn btn-sm btn-link like-btn">&#128077;&#127999;</button>
                 <span class="like-count">0</span>
+
+                {% if user.is_authenticated %}
+
+                    <button class="btn btn-lg btn-link reply-btn">Reply</button>
+                    <div class="text-center reply-view" style="display: flex; justify-content: center;">
+                        <form class="reply-form">
+                            <textarea class="reply-content"></textarea>
+                            <button class="btn btn-primary save-btn">Save</button>
+                        </form>
+                    </div>
+
+                {% endif %}                
                 {% if user_is_author %}
                     <button class="btn btn-lg btn-link edit-view-btn">Edit</button>
                     <button class="btn btn-lg btn-link delete-post-btn">Delete</button>

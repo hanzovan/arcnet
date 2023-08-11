@@ -326,3 +326,6 @@ def edit_post(request):
             post.delete()
             
     return JsonResponse({'message': 'Post edited'})
+
+
+# Allow user to create reply to a post

@@ -125,7 +125,7 @@ textarea {
 .like-count {
   color: black; }
 
-.like-btn, .edit-view-btn, .save-btn, .delete-post-btn {
+.like-btn, .edit-view-btn, .save-btn, .delete-post-btn, .reply-btn {
   text-decoration: none; }
 
 .paging-link, #follow-btn {
