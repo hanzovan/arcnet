@@ -120,8 +120,27 @@ document.addEventListener('DOMContentLoaded', function() {
                             commentDiv.append(comment);
 
                             post.querySelector('.post-comments').appendChild(commentDiv);
+
+                            // Clear the editing form
                             replyView.style.display = 'none';
+
+                            // Show all previous comment
                             post.querySelector('.post-comments').style.display = 'block';
+
+                            // Update the showing comment button
+                            const showCommentBtn = post.querySelector('.comments-showing-btn');
+                            
+                            // Get the number of comment count of the post
+                            const currentCommentCount = parseInt(post.getAttribute('data-comment-count'));
+
+                            // Update the number by + 1
+                            const updatedCommentCount = currentCommentCount + 1;
+
+                            // Update the comment count attribute
+                            post.setAttribute('data-comment-count', updatedCommentCount);
+
+                            // Modify the showCommentBtn.innerHTML
+                            showCommentBtn.innerHTML = `Show ${updatedCommentCount} comments`;
                         })
 
 

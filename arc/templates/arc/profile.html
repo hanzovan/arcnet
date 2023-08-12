@@ -44,7 +44,7 @@
     <div class="container" id="posts-container">
         {% for post in page_obj %}
 
-            <div class="post" id="post-{{ post.id }}">
+            <div class="post" id="post-{{ post.id }}" data-comment-count="{{ post.replies_count }}">
                 <a class="author">
                     <strong>{{ post.author }}</strong>
                 </a>
