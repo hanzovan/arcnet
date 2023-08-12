@@ -2,6 +2,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // When DOM content loaded, update like count
     const Posts = document.querySelectorAll('.post');
     update_like();
+
+    // Hide all comments
+    Posts.forEach(post => {
+        post.querySelector('.post-comments').style.display = 'none';
+    })
+
     // Get all the post and add eventlistener to all like button if user logged in
     if (isAuthenticated) {
         Posts.forEach(post => {
@@ -81,16 +87,48 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const replyView = post.querySelector('.reply-view');
             replyView.style.display = 'none';
-            post.querySelector('.reply-btn').onclick = function() {
+            
+            post.querySelector('.reply-btn').onclick = function() {                
                 if (replyView.style.display === 'flex') {
                     replyView.style.display = 'none';
-                } else {                    
+                } else {                   
                     replyView.style.display = 'flex';
-                    const inputArea = post.querySelector('reply-content');
+                    const inputArea = post.querySelector('.reply-content');
                     inputArea.innerHTML = '';
+                    post.querySelector('.reply-form').onsubmit = function() {
+                        // send user input to server side for handling
+                        fetch('/reply', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                post_id: post.id.slice(5),
+                                reply_content: inputArea.value
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(() => {
+                            // add new reply to post
+                            const commentDiv = document.createElement('div');
+                            commentDiv.className = 'reply';
+                            const commentor = document.createElement('a');
+                            commentor.className = 'commentor';
+                            commentor.innerHTML = `<strong>${username}</strong>`;
+                            const comment = document.createElement('span');
+                            comment.className = 'comment';
+                            comment.innerHTML = ` ${inputArea.value}`;
+
+                            commentDiv.append(commentor);
+                            commentDiv.append(comment);
+
+                            post.querySelector('.post-comments').appendChild(commentDiv);
+                            replyView.style.display = 'none';
+                            post.querySelector('.post-comments').style.display = 'block';
+                        })
+
+
+                        return false;
+                    }
                 }
                 
-
             }
         })        
     }
@@ -110,6 +148,17 @@ document.addEventListener('DOMContentLoaded', function() {
             })
         })
     }
+    Posts.forEach(post => {
+        const commentShowBtn = post.querySelector('.comments-showing-btn');
+        const thisPostComments = post.querySelector('.post-comments');
+        commentShowBtn.onclick = function() {
+            if (thisPostComments.style.display === 'block') {
+                thisPostComments.style.display = 'none';
+            } else {
+                thisPostComments.style.display = 'block';
+            }
+        }
+    })
     
     
 })

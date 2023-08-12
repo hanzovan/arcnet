@@ -55,7 +55,36 @@
 
                 {% if user.is_authenticated %}
 
-                    <button class="btn btn-lg btn-link reply-btn">Reply</button>
+                    <button class="btn btn-lg btn-link reply-btn">Reply</button>                    
+
+                {% endif %}                
+                {% if user_is_author %}
+                    <button class="btn btn-lg btn-link edit-view-btn">Edit</button>
+                    <button class="btn btn-lg btn-link delete-post-btn">Delete</button>
+                {% endif %}
+
+                <button class="btn btn-lg btn-link comments-showing-btn">Show {{ post.replies_count }} comments</button>
+
+                {% if user_is_author %}
+                    <div class="text-center edit-view" style="display: none; justify-content: center;">
+                        <form class="edit-form">
+                            <textarea class="new-content"></textarea>
+                            <button class="btn btn-primary save-btn">Save</button>
+                        </form>
+                    </div>                    
+                {% endif %}
+                    <div class="post-comments">
+                        {% for reply in post.replies %}
+
+                            <div class="reply">
+                                <a class="commentor"><strong>{{ reply.commentor }}</strong></a> <span class="comment">{{ reply.comment }}</span>
+                            </div>
+
+                        {% endfor %}
+                    </div>
+                <!-- the replying box should be at the end of the post -->
+                {% if user.is_authenticated %}
+
                     <div class="text-center reply-view" style="display: flex; justify-content: center;">
                         <form class="reply-form">
                             <textarea class="reply-content"></textarea>
@@ -63,16 +92,6 @@
                         </form>
                     </div>
 
-                {% endif %}                
-                {% if user_is_author %}
-                    <button class="btn btn-lg btn-link edit-view-btn">Edit</button>
-                    <button class="btn btn-lg btn-link delete-post-btn">Delete</button>
-                    <div class="text-center edit-view" style="display: none; justify-content: center;">
-                        <form class="edit-form">
-                            <textarea class="new-content"></textarea>
-                            <button class="btn btn-primary save-btn">Save</button>
-                        </form>
-                    </div>                    
                 {% endif %}
             </div>
         {% endfor %}

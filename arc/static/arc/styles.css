@@ -125,7 +125,7 @@ textarea {
 .like-count {
   color: black; }
 
-.like-btn, .edit-view-btn, .save-btn, .delete-post-btn, .reply-btn {
+.like-btn, .edit-view-btn, .save-btn, .delete-post-btn, .reply-btn, .comments-showing-btn {
   text-decoration: none; }
 
 .paging-link, #follow-btn {
@@ -142,5 +142,17 @@ textarea {
 #follow li {
   font-size: 13px;
   color: grey; }
+
+.post-comments {
+  margin-left: 50px; }
+
+.reply {
+  margin: 30px 50px; }
+
+.commentor {
+  font-family: sans-serif;
+  font-size: 24;
+  text-decoration: none;
+  cursor: pointer; }
 
 /*# sourceMappingURL=styles.css.map */

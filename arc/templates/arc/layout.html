@@ -20,6 +20,9 @@
             var isAuthenticated = {{ user.is_authenticated | lower }};
             {% if user.is_authenticated %}
                 var user_id = {{ user.id }};
+
+                // Handling a string, we need to add the double quotes
+                var username = "{{ user.username }}";
             {% endif %}
         </script>
         <script src="{% static 'arc/layout.js' %}"></script>

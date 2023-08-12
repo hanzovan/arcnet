@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 
 from .helpers import strong_password
-from .models import User, Post, Like
+from .models import User, Post, Like, Reply
 
 
 # Create your views here.
@@ -222,6 +222,16 @@ def profile(request, author_id):
     author = User.objects.get(pk=author_id)
     posts = Post.objects.filter(author=author).order_by("-created")    
 
+    # add all replies to each post
+    post_data = []
+    for post in posts:
+        post_info = post.serialize()
+
+        # Beside the fields that already in the post.serialize, add replies relevant to the post
+        post_info['replies'] = [reply.serialize() for reply in post.replies.all()]
+        post_info['replies_count'] = post.replies.all().count()
+        post_data.append(post_info)
+
     # Calculate the number of following and follower of this author    
     following_users = author.following.all()
     following_count = following_users.count()
@@ -230,7 +240,7 @@ def profile(request, author_id):
     followers_count = followers.count()   
 
     # Set up paging
-    paging = Paginator(posts, 10)
+    paging = Paginator(post_data, 10)
     page_number = request.GET.get('page')
     page_obj = paging.get_page(page_number)
 
@@ -329,3 +339,21 @@ def edit_post(request):
 
 
 # Allow user to create reply to a post
+@login_required
+@csrf_exempt
+def reply(request):
+    # the method have to be POST
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'}, status=400)
+    data = json.loads(request.body)
+    if data.get('reply_content') is not None:
+        reply_content = data['reply_content']
+        post_id = data['post_id']
+        new_reply = Reply(
+            post = Post.objects.get(pk=post_id),
+            commentor = request.user,
+            comment = reply_content
+        )
+        new_reply.save()
+        return JsonResponse({'message': 'Reply saved'})
+    return JsonResponse({'error': 'reply can not be blank'}, status=400)
