@@ -211,7 +211,38 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     postDiv.appendChild(editViewBtn);
-                    postDiv.appendChild(deleteBtn)
+                    postDiv.appendChild(deleteBtn);
+
+                    // Add reply button
+                    const replyBtn = document.createElement('button');
+                    replyBtn.className = 'btn btn-lg btn-link reply-btn';
+                    replyBtn.innerHTML = 'Reply';
+
+                    postDiv.appendChild(replyBtn);
+
+                    // When reply button was clicked, create a reply view with a form for user to enter
+                    replyBtn.onclick = function() {
+                        const replyView = document.createElement('div');
+                        replyView.className = 'text-center reply-view';
+                        replyView.style.display = 'flex';
+                        replyView.style.justifyContent = 'center';
+
+                        const replyForm = document.createElement('form');
+                        replyForm.className = 'reply-form';
+                        const inputArea = document.createElement('textarea');
+                        inputArea.className = 'reply-content';
+                        const saveBtn = document.createElement('button');
+                        saveBtn.className = 'btn btn-primary save-btn';
+                        saveBtn.innerHTML = 'Save';
+                        replyForm.appendChild(inputArea);
+                        replyForm.appendChild(saveBtn);
+                        replyView.appendChild(replyForm);
+                        postDiv.appendChild(replyView);
+                        // document.querySelector('h1').style.color = 'red';
+                    }
+
+
+                    
                 }
             })
 

@@ -143,7 +143,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             showCommentBtn.innerHTML = `Show ${updatedCommentCount} comments`;
                         })
 
-
                         return false;
                     }
                 }
