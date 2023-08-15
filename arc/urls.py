@@ -14,5 +14,6 @@ urlpatterns = [
     path('follow_user', views.follow_user, name="follow_user"),
     path('following_page', views.following_page, name="following_page"),
     path('edit_post', views.edit_post, name="edit_post"),
-    path('reply', views.reply, name='reply')
+    path('reply', views.reply, name='reply'),
+    path('update_replies', views.update_replies, name='update_replies')
 ]

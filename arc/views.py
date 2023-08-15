@@ -37,8 +37,8 @@ def index(request):
 def get_posts(request, page_number):
     # Get all posts and turn them into pages
     posts = Post.objects.all().order_by("-created")
-    paging = Paginator(posts, 10)
 
+    paging = Paginator(posts, 10)
     # Get the current page which user choses
     page_obj = paging.get_page(page_number)
 
@@ -357,3 +357,21 @@ def reply(request):
         new_reply.save()
         return JsonResponse({'message': 'Reply saved'})
     return JsonResponse({'error': 'reply can not be blank'}, status=400)
+
+
+# Allow replies to be updated in index page
+@csrf_exempt
+def update_replies(request):
+    # Require method to be POST
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'}, status=400)
+    data = json.loads(request.body)
+    if data.get('post_id') is not None:
+        post = Post.objects.get(pk=data['post_id'])
+        replies = post.replies.all()
+        replies_count = post.replies.all().count()
+
+        return JsonResponse({
+            'replies': [reply.serialize() for reply in replies],
+            'replies_count': replies_count
+        })

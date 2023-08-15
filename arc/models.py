@@ -44,6 +44,6 @@ class Reply(models.Model):
         return {
             'id': self.id,
             'author': self.post.author.username,
-            'commentor': self.commentor,
+            'commentor': self.commentor.username,
             'comment': self.comment
         }

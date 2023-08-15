@@ -132,13 +132,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const likeCount = document.createElement('span');
                 likeCount.className = 'like-count';
-                likeCount.innerHTML = '0';                
+                likeCount.innerHTML = '0';
+                
+                // Add reply button
+                const replyBtn = document.createElement('button');
+                replyBtn.className = 'btn btn-lg btn-link reply-btn';
+                replyBtn.innerHTML = 'Reply';
+                
+                const commentShowBtn = document.createElement('button');
+                commentShowBtn.className = 'btn btn-lg btn-link comments-showing-btn';
+                commentShowBtn.innerHTML = 'Show all replies';
 
                 postDiv.appendChild(author);
                 postDiv.appendChild(timeStamp);
                 postDiv.appendChild(conTent);
                 postDiv.appendChild(likeBtn);
                 postDiv.appendChild(likeCount);
+                postDiv.appendChild(replyBtn);
+                postDiv.appendChild(commentShowBtn);
                 postsContainer.appendChild(postDiv);
 
                 // Add ability edit and remove post for only author of the post
@@ -211,38 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     postDiv.appendChild(editViewBtn);
-                    postDiv.appendChild(deleteBtn);
-
-                    // Add reply button
-                    const replyBtn = document.createElement('button');
-                    replyBtn.className = 'btn btn-lg btn-link reply-btn';
-                    replyBtn.innerHTML = 'Reply';
-
-                    postDiv.appendChild(replyBtn);
-
-                    // When reply button was clicked, create a reply view with a form for user to enter
-                    replyBtn.onclick = function() {
-                        const replyView = document.createElement('div');
-                        replyView.className = 'text-center reply-view';
-                        replyView.style.display = 'flex';
-                        replyView.style.justifyContent = 'center';
-
-                        const replyForm = document.createElement('form');
-                        replyForm.className = 'reply-form';
-                        const inputArea = document.createElement('textarea');
-                        inputArea.className = 'reply-content';
-                        const saveBtn = document.createElement('button');
-                        saveBtn.className = 'btn btn-primary save-btn';
-                        saveBtn.innerHTML = 'Save';
-                        replyForm.appendChild(inputArea);
-                        replyForm.appendChild(saveBtn);
-                        replyView.appendChild(replyForm);
-                        postDiv.appendChild(replyView);
-                        // document.querySelector('h1').style.color = 'red';
-                    }
-
-
-                    
+                    postDiv.appendChild(deleteBtn);                                               
                 }
             })
 
@@ -266,6 +246,61 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             updateLikes(posts);
+
+            function updateReplies(posts) {
+                posts.forEach(post => {
+                    fetch(`/update_replies`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            'post_id': post.id
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const replies = data.replies;
+                        const repliesCount = data.replies_count;
+
+                        let currentPost = document.querySelector(`#post-${post.id}`);
+                        let commentShowingBtn = currentPost.querySelector('.comments-showing-btn');
+
+                        if (repliesCount > 0) {
+                            commentShowingBtn.innerHTML = `Show ${repliesCount} replies`;
+                            
+                            // Add eventlistener to the comment showing button
+                            commentShowingBtn.onclick = function() {
+                                if (currentPost.querySelector('.post-comments')) {
+                                    currentPost.querySelector('.post-comments').remove();
+                                } else {
+                                    const commentsDiv = document.createElement('div');
+                                    commentsDiv.className = 'post-comments';
+                                    replies.forEach(reply => {
+                                        const replyDiv = document.createElement('div');
+                                        replyDiv.className = 'reply';
+                                        const commentor = document.createElement('a');
+                                        commentor.className = 'commentor';
+                                        commentor.innerHTML = `<strong>${reply.commentor}</strong>`;
+                                        const comment = document.createElement('span');
+                                        comment.className = 'comment';
+                                        comment.innerHTML = `${reply.comment}`;
+
+                                        replyDiv.append(commentor);
+                                        replyDiv.append(comment);
+                                        commentsDiv.append(replyDiv);
+                                        currentPost.append(commentsDiv);                                    
+                                    })
+                                }
+                                
+                            }
+
+                        } else {
+                            commentShowingBtn.remove();
+                        }
+                        
+                        
+                    })
+                })
+            }
+            updateReplies(posts);
 
             // Show the pagin link
             const pagingDiv = document.createElement('div');
